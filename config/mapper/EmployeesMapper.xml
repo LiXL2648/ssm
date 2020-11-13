@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zghky.dao.EmployeesMapper">
+	<cache type="org.mybatis.caches.ehcache.EhcacheCache"></cache>
+
+	<select id="getEmpById" resultType="employees">
+		select * from employees where emp_id = #{empId}
+	</select>
+	
+	<resultMap type="employees" id="empsMap">
+		<id column="emp_id" property="empId"/>
+		<result column="emp_name" property="empName"/>
+		<result column="email" property="email"/>
+		<result column="gender" property="gender"/>
+		<result column="birthday" property="birthday"/>
+		<result column="dep_id" property="depId"/>
+		<!-- 嵌套结果集 -->
+		<!-- <association property="dep" javaType="departments">
+			<id column="dep_id" property="depId"/>
+			<result column="dep_name" property="depName"/>
+			<result column="city" property="city"/>
+		</association> -->
+		<!-- 分布查询 -->
+		<association property="dep" 
+			select="com.zghky.dao.DepartmentsMapper.getDepByDepId"
+			column="dep_id">
+		</association>
+	</resultMap>
+	<select id="getEmps" resultMap="empsMap">
+		<!-- select e.*, d.* from employees e left join departments d on 
+		e.dep_id = d.dep_id -->
+		select * from employees
+	</select>
+	
+	<update id="updateEmp">
+		update employees
+		<trim prefix="set" suffixOverrides=",">
+			<if test="empName != null and empName != ''">
+				emp_name = #{empName}, 
+			</if>
+			<if test="email != null and email != ''">
+				email = #{email}, 
+			</if>
+			<if test="gender == 0 or gender == 1">
+				gender = #{gender}, 
+			</if>
+			<if test="birthday != null">
+				birthday = #{birthday}, 
+			</if>
+			<if test="depId != null">
+				dep_id = #{depId}
+			</if>
+		</trim>
+		where emp_id = #{empId}
+	</update>
+</mapper>

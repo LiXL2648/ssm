@@ -1,0 +1,9 @@
+/applicationContext-mvc.xml
+/applicationContext.xml
+/com
+/ehcache.xml
+/error
+/jdbc.properties
+/log4j.xml
+/mapper
+/mybatis-conf.xml
